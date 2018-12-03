@@ -46,4 +46,6 @@ myAssert.integer.equals(message, expected, actual)
 
 payload <- read.csv(file = "app//payload//Day1_chronal_calibration.csv",header=FALSE)
 result <- chronal_calibration(payload)
-result
+
+print("--- Result ---")
+print(result)
