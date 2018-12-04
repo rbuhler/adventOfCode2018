@@ -33,7 +33,7 @@ chronal_calibration<-function(iv_current, iv_change){
 find_double<-function( iv_vect_a, iv_vect_b ){
   
   lenght_a <- nrow(iv_vect_a)
-  lenght_b <- nrow(iv_vect_a)
+  lenght_b <- nrow(iv_vect_b)
   found    <- FALSE
   twice    <- 0
   result   <- c( found, twice )
@@ -42,7 +42,7 @@ find_double<-function( iv_vect_a, iv_vect_b ){
     chk_b <- iv_vect_b[i, 3]
     
     for( j in 1:lenght_a ){
-      chk_a <- iv_vect_a[i, 3]
+      chk_a <- iv_vect_a[j, 3]
       
       if ( chk_b == chk_a && found == FALSE ){
         twice = chk_b
@@ -56,6 +56,7 @@ find_double<-function( iv_vect_a, iv_vect_b ){
       break
     }
   }
+  result
 }
 
 first_double_frequency<-function(iv_array){
@@ -65,14 +66,15 @@ first_double_frequency<-function(iv_array){
   repeat{
     
     vector_A <- chronal_calibration(0, vector_B)
-    vector_B <- chronal_calibration(vector_A[nrow(vector_A),3], vector_A)
+    vector_B <- chronal_calibration(vector_A[nrow(vector_A),3], vector_A[,3])
     
     result = find_double(vector_A, vector_B)
     
     break
     
   }
-
+  
+  result[2]
 }
 
 # # -*-*-*-*-*-*-*-*-*-*-*-*
