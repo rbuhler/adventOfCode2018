@@ -30,51 +30,26 @@ chronal_calibration<-function(iv_current, iv_change){
   
 }
 
-find_double<-function( iv_vect_a, iv_vect_b ){
-  
-  lenght_a <- nrow(iv_vect_a)
-  lenght_b <- nrow(iv_vect_b)
-  found    <- FALSE
-  twice    <- 0
-  result   <- c( found, twice )
-  
-  for( i in 1:lenght_b ){
-    chk_b <- iv_vect_b[i, 3]
-    
-    for( j in 1:lenght_a ){
-      chk_a <- iv_vect_a[j, 3]
-      
-      if ( chk_b == chk_a && found == FALSE ){
-        twice = chk_b
-        found  = TRUE
-        break
-      }
-    }
-    
-    if ( found == TRUE ){
-      result <- c( found, twice )
-      break
-    }
-  }
-  result
-}
+first_double_frequency<-function(change_list){
 
-first_double_frequency<-function(iv_array){
-  
-  vector_B <- iv_array
-  
+  change <- change_list
+  frequencies <- c(0)
+  duplicates <- vector()
+
   repeat{
     
-    vector_A <- chronal_calibration(0, vector_B)
-    vector_B <- chronal_calibration(vector_A[nrow(vector_A),3], vector_A[,3])
+    first_value <- frequencies[NROW(frequencies)]
+    matrix_a <- chronal_calibration(first_value, change)
     
-    result = find_double(vector_A, vector_B)
+    frequencies <- c(frequencies, matrix_a[,3])
+    duplicates <- duplicated(frequencies)
     
-    break
-    
+    result <- frequencies[duplicates]
+    if (length(result) > 0){
+      break  
+    }
   }
-  
-  result[2]
+  result[1]
 }
 
 # # -*-*-*-*-*-*-*-*-*-*-*-*
@@ -89,6 +64,12 @@ source('app/library/Assert.R')
 # -*-*-*-*-*-*-*-*-*-*-*-*
 
 # write.csv(payload, file = "app//payload//Day1_chronal_calibration.csv",row.names=FALSE, na="")
+
+variant <- c(+1, -2, +3, +1)
+expected <- 2
+actual <- first_double_frequency(variant)
+message  = '0'
+myAssert.integer.equals(message, expected, actual)
 
 variant <- c(+1, -1)
 expected <- 0
