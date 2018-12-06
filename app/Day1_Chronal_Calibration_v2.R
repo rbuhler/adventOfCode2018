@@ -63,7 +63,7 @@ source('app/library/Assert.R')
 # VARIANTS
 # -*-*-*-*-*-*-*-*-*-*-*-*
 
-# write.csv(payload, file = "app//payload//Day1_chronal_calibration.csv",row.names=FALSE, na="")
+# write.csv(payload, file = "app//payload//Day1_chronal_calibration2.csv",row.names=FALSE, na="")
 
 variant <- c(+1, -2, +3, +1)
 expected <- 2
@@ -97,7 +97,7 @@ myAssert.integer.equals(message, expected, actual)
 
 # -------- GET THE RESULT AFTER TESTING 
 
-payload <- read.csv(file = "app//payload//Day1_chronal_calibration.csv",header=FALSE)
+payload <- read.csv(file = "app//payload//Day1_chronal_calibration2.csv",header=FALSE)
 result <- first_double_frequency(payload)
 
 print("--- Result ---")
