@@ -6,18 +6,19 @@
 
 count_duplicates<-function(id_list){
   
+  list_size <- length(id_list)
   
-  list_size <- nrow(id_list)
-  
-  for(i in 1:id_list){
+  for(i in 1:list_size){
     id_row <- id_list[i]
     
-    id_size <- length(id_row){
-      for (j in 1:id_size){
-        
-      }
+    id_size <- nchar(id_row)
+    id_array <- vector()
+    for (j in 1:id_size){
+      id <- substr(id_row, j, j)
+      id_array <- c(id_array, id)
     }
-    
+    row_duplicates <- table(id_array)
+    row_duplicates
   }
   
 }
@@ -42,7 +43,7 @@ source('app/library/Assert.R')
 
 variant <- c("abcdef","bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab")
 expected <- 12
-actual <- first_double_frequency(variant)
+actual <- count_duplicates(variant)
 message  = '1'
 myAssert.integer.equals(message, expected, actual)
 
