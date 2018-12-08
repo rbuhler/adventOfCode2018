@@ -7,25 +7,42 @@
 count_duplicates<-function(id_list){
   
   list_size <- length(id_list)
+  result <- 1
+  count_one   = 0
+  count_two   = 0
+  count_three = 0
   
   for(i in 1:list_size){
     id_row <- id_list[i]
-    
     id_size <- nchar(id_row)
     id_array <- vector()
+    result <- vector()
+
     for (j in 1:id_size){
       id <- substr(id_row, j, j)
       id_array <- c(id_array, id)
+    
     }
     row_duplicates <- table(id_array)
     row_duplicates
-  }
-  
-}
+    dup_size <- length(row_duplicates)
+    for ( k in 1:dup_size){
 
-get_checksum<-function(id_list){
+      if ( row_duplicates[k] == 1){
+        count_one <- count_one + 1
+      }
+       
+      if ( row_duplicates[k] == 2){
+        count_two <- count_two + 1
+      }
+
+      if ( row_duplicates[k] == 3){
+        count_three <- count_three + 1
+      }
+    }
+  }
+  result = count_two * count_three
   
-  result
 }
 
 # # -*-*-*-*-*-*-*-*-*-*-*-*
