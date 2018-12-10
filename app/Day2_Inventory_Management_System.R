@@ -24,21 +24,24 @@ count_duplicates<-function(id_list){
     
     }
     row_duplicates <- table(id_array)
-    row_duplicates
+    row_duplicates <- sort(row_duplicates)
     dup_size <- length(row_duplicates)
+    previous_value = 0
+    current_value = 0
     for ( k in 1:dup_size){
-
-      if ( row_duplicates[k] == 1){
-        count_one <- count_one + 1
+      current_value = row_duplicates[k]
+      if (current_value > previous_value){
+        
+        if ( current_value == 2){
+          count_two <- count_two + 1
+        }
+        
+        if ( current_value == 3){
+          count_three <- count_three + 1
+        } 
+        
       }
-       
-      if ( row_duplicates[k] == 2){
-        count_two <- count_two + 1
-      }
-
-      if ( row_duplicates[k] == 3){
-        count_three <- count_three + 1
-      }
+      previous_value = current_value
     }
   }
   result = count_two * count_three
@@ -56,18 +59,18 @@ source('app/library/Assert.R')
 # VARIANTS
 # -*-*-*-*-*-*-*-*-*-*-*-*
 
-# write.csv(payload, file = "app//payload//Day2_Inventory_Management_System.cvs",row.names=FALSE, na="")
+# write.csv(payload, file = "app//payload//Day2_Inventory_Management_System.csv",row.names=FALSE, na="")
 
-variant <- c("abcdef","bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab")
-expected <- 12
-actual <- count_duplicates(variant)
-message  = '1'
-myAssert.integer.equals(message, expected, actual)
+# variant <- c("abcdef","bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab")
+# expected <- 12
+# actual <- count_duplicates(variant)
+# message  = '1'
+# myAssert.integer.equals(message, expected, actual)
 
 # -------- GET THE RESULT AFTER TESTING 
 
-# payload <- read.csv(file = "app//payload//Day2_Inventory_Management_System.cvs",header=FALSE)
-# result <- first_double_frequency(payload)
-# 
-# print("--- Result ---")
-# print(result)
+payload <- read.csv(file = "app//payload//Day2_Inventory_Management_System.csv",header=FALSE)
+result <- count_duplicates(payload)
+
+print("--- Result ---")
+print(result)
