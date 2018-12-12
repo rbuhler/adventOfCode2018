@@ -13,7 +13,7 @@ count_duplicates<-function(id_list){
   count_three = 0
   
   for(i in 1:list_size){
-    id_row <- id_list[i]
+    id_row <- as.character(id_list[i])
     id_size <- nchar(id_row)
     id_array <- vector()
     result <- vector()
@@ -61,15 +61,15 @@ source('app/library/Assert.R')
 
 # write.csv(payload, file = "app//payload//Day2_Inventory_Management_System.csv",row.names=FALSE, na="")
 
-# variant <- c("abcdef","bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab")
-# expected <- 12
-# actual <- count_duplicates(variant)
-# message  = '1'
-# myAssert.integer.equals(message, expected, actual)
+variant <- c("abcdef","bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab")
+expected <- 12
+actual <- count_duplicates(variant)
+message  = '1'
+myAssert.integer.equals(message, expected, actual)
 
 # -------- GET THE RESULT AFTER TESTING 
 
-payload <- read.csv(file = "app//payload//Day2_Inventory_Management_System.csv",header=FALSE)
+payload <- read.csv(file = "app//payload//Day2_Inventory_Management_System.csv",header=FALSE)$V1
 result <- count_duplicates(payload)
 
 print("--- Result ---")
