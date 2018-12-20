@@ -93,19 +93,38 @@ read_claim<-function(claim){
 count_overlap<-function(claim_list){
   
   return <- 0
+  count <- 0
+  claims_vector <- vector()
+  
+  order  <- 0
+  X_col  <- 0
+  y_row  <- 0
+  length <- 0
+  height <- 0
+
   # read claim list
   list_size <- length(claim_list)
   for (i in 1:list_size){
     read <- read_claim(claim_list[i])
-    read
+    names(read)<-c("position", "left", "top", "wide", "tall")
     
+    order  <- as.numeric(read["position"])
+    x_col  <- as.numeric(read["left"])
+    y_row  <- as.numeric(read["top"])
+    length <- as.numeric(read["wide"])
+    height <- as.numeric(read["tall"])
+    
+     for (k in 1:height){
+      for(j in 1:length) {
+        
+          v <- paste0(k+y_row, 'X',j+x_col)
+          claims_vector <- c(claims_vector, v)
+        
+      }      
+    }
   }
 
-  # in an array of 1000 identify a claim
-  
-  # store each claim in a vector
-  
-  # return the vector of claims
+  count <- table(claims_vector)
   
   return
 }
