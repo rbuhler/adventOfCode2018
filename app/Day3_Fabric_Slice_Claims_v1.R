@@ -64,7 +64,6 @@ read_claim<-function(claim){
       }
     }
     
-    
     # --------------------------------    
     if (char == "#"){
       step <- "sequence"
@@ -125,6 +124,8 @@ count_overlap<-function(claim_list){
   }
 
   count <- table(claims_vector)
+  duplicates <- table(count)
+  return <- as.numeric(duplicates[2])
   
   return
 }
@@ -142,22 +143,28 @@ source('app/library/Assert.R')
 
 # write.csv(payload, file = "app//payload//Day2_Inventory_Management_System.csv",row.names=FALSE, na="")
 
-claim_one   = "#1 @ 1,3: 4x4"
-claim_two   = "#2 @ 3,1: 4x4"
-claim_three = "#3 @ 5,5: 2x2"
-
-claim_list = c(claim_one, claim_two, claim_three)
-
-variant <- claim_list
-expected <- 4
-actual <- count_overlap(variant)
-message  = 'Variant 1'
-myAssert.integer.equals(message, expected, actual[1])
+# claim_one   = "#1 @ 1,3: 4x4"
+# claim_two   = "#2 @ 3,1: 4x4"
+# claim_three = "#3 @ 5,5: 2x2"
+# 
+# claim_list = c(claim_one, claim_two, claim_three)
+# 
+# variant <- claim_list
+# expected <- 4
+# actual <- count_overlap(variant)
+# message  = 'Variant 1'
+# myAssert.integer.equals(message, expected, actual[1])
 
 # -------- GET THE RESULT AFTER TESTING 
 
-# payload <- read.csv(file = "app//payload//Day2_Inventory_Management_System2.csv",header=FALSE)$V1
-# result <- count_overlap(payload)
-# 
-# print("--- Result ---")
-# print(result)
+file <- "app//payload//Day3_Fabric_Slice_Claims.csv"
+payload <- read.delim(file, header = TRUE, sep = "\t", quote = "\"")
+
+if (is.data.frame(payload)){
+  payload <- as.vector(t(payload))
+}
+
+result <- count_overlap(payload)
+
+print("--- Result ---")
+print(result)
