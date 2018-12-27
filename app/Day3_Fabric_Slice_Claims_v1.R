@@ -4,89 +4,97 @@
 
 # -*-*-*-*-*-*-*-*-*-*-*-*
 
-read_claim<-function(claim){
-  
-  seq  <- 0
-  left <- 0
-  top  <- 0
-  wide <- 0
-  tall <- 0
-  step <- ""
-  char_order <- ""
-  char_left  <- ""
-  char_top   <- ""
-  char_wide  <- ""
-  char_tall  <-""
-  coma <- FALSE
-  x <- FALSE
+read_claim<-function(claim_list){
   
   numbers <- "1234567890"
   result <- vector()
+  result_frame <- data.frame()
+  list_size <- length(claim_list)
   
-  claim_size <- nchar(claim)
-  
-  for(j in 1:claim_size){
-    char <- substr(claim,j,j)
-
-    if (step == "sequence"){
-      if (grepl(char, numbers, fixed=TRUE)){
-        char_order <- paste0(char_order, char)
-      }
-    }
+  for (i in 1:list_size){
+    seq  <- 0
+    left <- 0
+    top  <- 0
+    wide <- 0
+    tall <- 0
+    step <- ""
+    char_order <- ""
+    char_left  <- ""
+    char_top   <- ""
+    char_wide  <- ""
+    char_tall  <-""
+    coma <- FALSE
+    x <- FALSE
     
-    if (step == "position"){
-      if (grepl(char, numbers, fixed=TRUE)){
-       
-        if (!coma){
-          char_left <- paste0(char_left, char)          
+    claim <- claim_list[i]
+    claim_size <- nchar(claim)
+    
+    for(j in 1:claim_size){
+      char <- substr(claim,j,j)
+      
+      if (step == "sequence"){
+        if (grepl(char, numbers, fixed=TRUE)){
+          char_order <- paste0(char_order, char)
+        }
+      }
+      
+      if (step == "position"){
+        if (grepl(char, numbers, fixed=TRUE)){
+          
+          if (!coma){
+            char_left <- paste0(char_left, char)          
+          }else{
+            char_top <- paste0(char_top, char)  
+          }          
         }else{
-          char_top <- paste0(char_top, char)  
-        }          
-      }else{
-        if (char == ','){
-          coma <- TRUE
+          if (char == ','){
+            coma <- TRUE
+          }
         }
       }
-    }
-
-    if (step == "dimention"){
-      if (grepl(char, numbers, fixed=TRUE)){
-        
-        if(!x){
-          char_wide <- paste0(char_wide, char)  
+      
+      if (step == "dimention"){
+        if (grepl(char, numbers, fixed=TRUE)){
+          
+          if(!x){
+            char_wide <- paste0(char_wide, char)  
+          }else{
+            char_tall <- paste0(char_tall, char)  
+          }
         }else{
-          char_tall <- paste0(char_tall, char)  
-        }
-      }else{
-        if( char == 'x'){
-          x <- TRUE
+          if( char == 'x'){
+            x <- TRUE
+          }
         }
       }
+      
+      # --------------------------------    
+      if (char == "#"){
+        step <- "sequence"
+      }
+      
+      if(char == "@"){
+        step <- "position"
+      }
+      
+      if(char == ":"){
+        step <- "dimention"
+      }    
+      
     }
     
-    # --------------------------------    
-    if (char == "#"){
-      step <- "sequence"
-    }
+    order <- as.numeric(char_order)
+    left <- as.numeric(char_left)
+    top <- as.numeric(char_top)
+    wide <- as.numeric(char_wide)
+    tall <- as.numeric(char_tall)
     
-    if(char == "@"){
-      step <- "position"
-    }
+    result <- c(order, left, top, wide, tall)
+    result_frame <- rbind(result_frame, result) 
     
-    if(char == ":"){
-      step <- "dimention"
-    }    
-     
   }
   
-  order <- as.numeric(char_order)
-  left <- as.numeric(char_left)
-  top <- as.numeric(char_top)
-  wide <- as.numeric(char_wide)
-  tall <- as.numeric(char_tall)
-  
-  result <- c(order, left, top, wide, tall)
-  
+  result_frame
 }
 
 count_overlap<-function(claim_list){
@@ -100,18 +108,20 @@ count_overlap<-function(claim_list){
   y_row  <- 0
   length <- 0
   height <- 0
-
-  # read claim list
-  list_size <- length(claim_list)
+  
+  read <- read_claim(claim_list)
+  list_size <- nrow(read)
+  
   for (i in 1:list_size){
-    read <- read_claim(claim_list[i])
     names(read)<-c("position", "left", "top", "wide", "tall")
     
-    order  <- as.numeric(read["position"])
-    x_col  <- as.numeric(read["left"])
-    y_row  <- as.numeric(read["top"])
-    length <- as.numeric(read["wide"])
-    height <- as.numeric(read["tall"])
+    order  <- as.numeric(read[i,"position"])
+    x_col  <- as.numeric(read[i,"left"])
+    y_row  <- as.numeric(read[i,"top"])
+    length <- as.numeric(read[i,"wide"])
+    height <- as.numeric(read[i,"tall"])
+    
+    print( paste0("Processing ", ( i / list_size) * 100, " %"))
     
      for (k in 1:height){
       for(j in 1:length) {
@@ -125,7 +135,7 @@ count_overlap<-function(claim_list){
 
   count <- table(claims_vector)
   duplicates <- table(count)
-  return <- as.numeric(duplicates[2])
+  return <- as.numeric(sum( sum(duplicates) - duplicates[1]) )
   
   return
 }
@@ -158,7 +168,7 @@ source('app/library/Assert.R')
 # -------- GET THE RESULT AFTER TESTING 
 
 file <- "app//payload//Day3_Fabric_Slice_Claims.csv"
-payload <- read.delim(file, header = TRUE, sep = "\t", quote = "\"")
+payload <- read.delim(file, header = FALSE, sep = "\t", quote = "\"")
 
 if (is.data.frame(payload)){
   payload <- as.vector(t(payload))
