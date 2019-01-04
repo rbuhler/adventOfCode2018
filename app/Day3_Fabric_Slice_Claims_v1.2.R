@@ -6,22 +6,22 @@
 
 read_claims<-function(claim_list){
 
-  numbers <- "1234567890"
-  step <- ""
-  char_order <- ""
-  char_left <- ""
-  char_top <- ""
-  char_wide <- ""
-  char_tall <- ""
-  coma <- FALSE
-  x <- FALSE
+  claims <- data.frame()
   
-  claims <- vector()
-  
-  list_size <- length(claim_list)
+  list_size <- lengths(claim_list)
   for (i in 1:list_size){
-    read <- claim_list[i]
+    read <- claim_list[i,1]
     claim_size <- nchar(read)
+    
+    numbers <- "1234567890"
+    step <- ""
+    char_order <- ""
+    char_left <- ""
+    char_top <- ""
+    char_wide <- ""
+    char_tall <- ""
+    coma <- FALSE
+    x <- FALSE
     
     for(j in 1:claim_size){
       char <- substr(read,j,j)
@@ -84,34 +84,13 @@ read_claims<-function(claim_list){
     tall <- as.numeric(char_tall)
     
     vector <- c(order, left, top, wide, tall)    
-    claims <- c(claims, vector)
+    claims <- rbind(claims, vector)
         
   }
   names(claims)<-c("position", "left", "top", "wide", "tall")
   
   claims
     
-  # seq  <- 0
-  # left <- 0
-  # top  <- 0
-  # wide <- 0
-  # tall <- 0
-  # step <- ""
-  # char_order <- ""
-  # char_left  <- ""
-  # char_top   <- ""
-  # char_wide  <- ""
-  # char_tall  <-""
-  # coma <- FALSE
-  # x <- FALSE
-  # 
-  
-  # result <- vector()
-  # 
-  # claim_size <- nchar(claim)
-  # 
-
-  
 }
 
 count_overlap<-function(claim_list){
@@ -173,19 +152,36 @@ source('app/library/Assert.R')
 
 # write.csv(payload, file = "app//payload//Day2_Inventory_Management_System.csv",row.names=FALSE, na="")
 
-claim_one   = "#1 @ 1,3: 4x4"
-claim_two   = "#2 @ 3,1: 4x4"
-claim_three = "#3 @ 5,5: 2x2"
+# Unit Testing
+# Load scenario
 
-claim_list = c(claim_one, claim_two, claim_three)
+file <- "app//payload//Day3_UT_001_HAPPY_PATH.csv"
+payload <- read_delim("app/payload/Day3_UT_001_HAPPY_PATH.csv", 
+                      "\t", quote = "\\\"", escape_double = FALSE, 
+                      col_names = FALSE, trim_ws = TRUE)
 
-variant <- claim_list
+# read_claims
+claim_list <- read_claims(payload)
+
+actual <- claim_list
+expected <- data.frame()
+
+  
+  row_frame <- c(1, 1, 3, 4, 4)
+expected <- rbind (expected, row_frame)
+  row_frame <- c(2, 3, 1, 4, 4)
+expected <- rbind (expected, row_frame)
+  row_frame <- c(3, 5, 5, 2, 2)
+expected <- rbind (expected, row_frame)
+names(expected)<-c("position", "left", "top", "wide", "tall")
+
+message  = 'read_claims Variant 1'
+myAssert.integer.equals(message, expected, actual)
+
+# count_overlap
+actual <- count_overlap(claim_list)
 expected <- 4
-
-claims <- read_claims(variant)
-
-actual <- count_overlap(variant)
-message  = 'Variant 1'
+message  = 'count_overlap Variant 1'
 myAssert.integer.equals(message, expected, actual[1])
 
 # -------- GET THE RESULT AFTER TESTING 
