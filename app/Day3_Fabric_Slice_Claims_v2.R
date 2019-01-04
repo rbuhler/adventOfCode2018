@@ -98,12 +98,12 @@ read_claim<-function(claim_list){
 }
 
 count_overlap<-function(claim_list){
-  ptm <- proc.time()
   
   return <- 0
   count <- 0
   claims_vector <- vector()
-  
+  claims_frame <- data.frame()
+
   order  <- 0
   X_col  <- 0
   y_row  <- 0
@@ -123,24 +123,20 @@ count_overlap<-function(claim_list){
     height <- as.numeric(read[i,"tall"])
     
     print( paste0("Processing ", ( i / list_size) * 100, " %"))
-    
+    claim <- c(as.character(i))    
      for (k in 1:height){
       for(j in 1:length) {
         
           v <- paste0(k+y_row, 'X',j+x_col)
-          claims_vector <- c(claims_vector, v)
-          # print (paste0(i, " of ", list_size))
-        
-      }      
-    }
+          claim <- c(claim, v)
+      }
+     }
+    claims_frame <- rbind(claims_frame, claim)
   }
 
   count <- table(claims_vector)
   duplicates <- table(count)
   return <- as.numeric(sum( sum(duplicates) - duplicates[1]) )
-  
-  print("count_overlap")
-  print(proc.time() - ptm)
   
   return
 }
@@ -165,7 +161,7 @@ claim_three = "#3 @ 5,5: 2x2"
 claim_list = c(claim_one, claim_two, claim_three)
 
 variant <- claim_list
-expected <- 4
+expected <- 3
 actual <- count_overlap(variant)
 message  = 'Variant 1'
 myAssert.integer.equals(message, expected, actual[1])
@@ -173,7 +169,7 @@ myAssert.integer.equals(message, expected, actual[1])
 # -------- GET THE RESULT AFTER TESTING 
 
 # file <- "app//payload//Day3_Fabric_Slice_Claims.csv"
-# payload <- read.delim(file, header = TRUE, sep = "\t", quote = "\"")
+# payload <- read.delim(file, header = FALSE, sep = "\t", quote = "\"")
 # 
 # if (is.data.frame(payload)){
 #   payload <- as.vector(t(payload))
