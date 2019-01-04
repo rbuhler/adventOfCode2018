@@ -4,88 +4,113 @@
 
 # -*-*-*-*-*-*-*-*-*-*-*-*
 
-read_claim<-function(claim){
-  
-  seq  <- 0
-  left <- 0
-  top  <- 0
-  wide <- 0
-  tall <- 0
+read_claims<-function(claim_list){
+
+  numbers <- "1234567890"
   step <- ""
   char_order <- ""
-  char_left  <- ""
-  char_top   <- ""
-  char_wide  <- ""
-  char_tall  <-""
+  char_left <- ""
+  char_top <- ""
+  char_wide <- ""
+  char_tall <- ""
   coma <- FALSE
   x <- FALSE
   
-  numbers <- "1234567890"
-  result <- vector()
+  claims <- vector()
   
-  claim_size <- nchar(claim)
-  
-  for(j in 1:claim_size){
-    char <- substr(claim,j,j)
-
-    if (step == "sequence"){
-      if (grepl(char, numbers, fixed=TRUE)){
-        char_order <- paste0(char_order, char)
-      }
-    }
+  list_size <- length(claim_list)
+  for (i in 1:list_size){
+    read <- claim_list[i]
+    claim_size <- nchar(read)
     
-    if (step == "position"){
-      if (grepl(char, numbers, fixed=TRUE)){
-       
-        if (!coma){
-          char_left <- paste0(char_left, char)          
-        }else{
-          char_top <- paste0(char_top, char)  
-        }          
-      }else{
-        if (char == ','){
-          coma <- TRUE
+    for(j in 1:claim_size){
+      char <- substr(read,j,j)
+      
+      if (step == "sequence"){
+        if (grepl(char, numbers, fixed=TRUE)){
+          char_order <- paste0(char_order, char)
         }
       }
+      
+      if (step == "position"){
+        if (grepl(char, numbers, fixed=TRUE)){
+          
+          if (!coma){
+            char_left <- paste0(char_left, char)          
+          }else{
+            char_top <- paste0(char_top, char)  
+          }          
+        }else{
+          if (char == ','){
+            coma <- TRUE
+          }
+        }
+      }
+      
+      if (step == "dimention"){
+        if (grepl(char, numbers, fixed=TRUE)){
+          
+          if(!x){
+            char_wide <- paste0(char_wide, char)  
+          }else{
+            char_tall <- paste0(char_tall, char)  
+          }
+        }else{
+          if( char == 'x'){
+            x <- TRUE
+          }
+        }
+      }
+      
+      # --------------------------------    
+      if (char == "#"){
+        step <- "sequence"
+      }
+      
+      if(char == "@"){
+        step <- "position"
+      }
+      
+      if(char == ":"){
+        step <- "dimention"
+      }    
+      
     }
-
-    if (step == "dimention"){
-      if (grepl(char, numbers, fixed=TRUE)){
+    
+    order <- as.numeric(char_order)
+    left <- as.numeric(char_left)
+    top <- as.numeric(char_top)
+    wide <- as.numeric(char_wide)
+    tall <- as.numeric(char_tall)
+    
+    vector <- c(order, left, top, wide, tall)    
+    claims <- c(claims, vector)
         
-        if(!x){
-          char_wide <- paste0(char_wide, char)  
-        }else{
-          char_tall <- paste0(char_tall, char)  
-        }
-      }else{
-        if( char == 'x'){
-          x <- TRUE
-        }
-      }
-    }
-    
-    # --------------------------------    
-    if (char == "#"){
-      step <- "sequence"
-    }
-    
-    if(char == "@"){
-      step <- "position"
-    }
-    
-    if(char == ":"){
-      step <- "dimention"
-    }    
-     
   }
+  names(claims)<-c("position", "left", "top", "wide", "tall")
   
-  order <- as.numeric(char_order)
-  left <- as.numeric(char_left)
-  top <- as.numeric(char_top)
-  wide <- as.numeric(char_wide)
-  tall <- as.numeric(char_tall)
+  claims
+    
+  # seq  <- 0
+  # left <- 0
+  # top  <- 0
+  # wide <- 0
+  # tall <- 0
+  # step <- ""
+  # char_order <- ""
+  # char_left  <- ""
+  # char_top   <- ""
+  # char_wide  <- ""
+  # char_tall  <-""
+  # coma <- FALSE
+  # x <- FALSE
+  # 
   
-  result <- c(order, left, top, wide, tall)
+  # result <- vector()
+  # 
+  # claim_size <- nchar(claim)
+  # 
+
   
 }
 
@@ -156,6 +181,9 @@ claim_list = c(claim_one, claim_two, claim_three)
 
 variant <- claim_list
 expected <- 4
+
+claims <- read_claims(variant)
+
 actual <- count_overlap(variant)
 message  = 'Variant 1'
 myAssert.integer.equals(message, expected, actual[1])
