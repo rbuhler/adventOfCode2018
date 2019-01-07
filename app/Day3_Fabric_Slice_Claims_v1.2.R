@@ -6,11 +6,12 @@
 
 read_claims<-function(claim_list){
 
+  ptm <- proc.time()
   claims <- data.frame()
   
   list_size <- lengths(claim_list)
   for (i in 1:list_size){
-    read <- claim_list[i,1]
+    read <- as.vector( claim_list[i,1] )
     claim_size <- nchar(read)
     
     numbers <- "1234567890"
@@ -89,27 +90,30 @@ read_claims<-function(claim_list){
   }
   names(claims)<-c("position", "left", "top", "wide", "tall")
   
+  print("read_claims")
+  print(proc.time() - ptm)
+    
   claims
     
 }
 
 count_overlap<-function(claim_list){
   ptm <- proc.time()
-  
+  idx <- 0
   return <- 0
   count <- 0
-  claims_vector <- vector()
+  claims_vector <- list()
   
   order  <- 0
-  X_col  <- 0
+  x_col  <- 0
   y_row  <- 0
   length <- 0
   height <- 0
 
   # read claim list
-  list_size <- length(claim_list)
+  list_size <- nrow(claim_list)
   for (i in 1:list_size){
-    read <- read_claim(claim_list[i])
+    read <- claim_list[i,]
     names(read)<-c("position", "left", "top", "wide", "tall")
     
     order  <- as.numeric(read["position"])
@@ -120,12 +124,12 @@ count_overlap<-function(claim_list){
     
      for (k in 1:height){
       for(j in 1:length) {
-        
+          idx <- idx + 1
           v <- paste0(k+y_row, 'X',j+x_col)
-          claims_vector <- c(claims_vector, v)
-          # print (paste0(i, " of ", list_size))
-        
+          claims_vector[idx] <- v
+          # claims_vector <- c(claims_vector, v)
       }      
+       print (paste0(i, " of ", list_size))
     }
   }
 
@@ -145,6 +149,7 @@ count_overlap<-function(claim_list){
 # # ASSERTS
 
 source('app/library/Assert.R')
+ptm <- proc.time()
 
 # -*-*-*-*-*-*-*-*-*-*-*-*
 # VARIANTS
@@ -154,46 +159,44 @@ source('app/library/Assert.R')
 
 # Unit Testing
 # Load scenario
-
-file <- "app//payload//Day3_UT_001_HAPPY_PATH.csv"
-payload <- read_delim("app/payload/Day3_UT_001_HAPPY_PATH.csv", 
-                      "\t", quote = "\\\"", escape_double = FALSE, 
-                      col_names = FALSE, trim_ws = TRUE)
-
+# file <- "app//payload//Day3_UT_001_HAPPY_PATH.txt"
+# payload <- as.data.frame( read.csv(file = file,
+#                                    sep = "\t",
+#                                    header=FALSE)$V1 )
 # read_claims
-claim_list <- read_claims(payload)
-
-actual <- claim_list
-expected <- data.frame()
-
-  
-  row_frame <- c(1, 1, 3, 4, 4)
-expected <- rbind (expected, row_frame)
-  row_frame <- c(2, 3, 1, 4, 4)
-expected <- rbind (expected, row_frame)
-  row_frame <- c(3, 5, 5, 2, 2)
-expected <- rbind (expected, row_frame)
-names(expected)<-c("position", "left", "top", "wide", "tall")
-
-message  = 'read_claims Variant 1'
-myAssert.integer.equals(message, expected, actual)
-
-# count_overlap
-actual <- count_overlap(claim_list)
-expected <- 4
-message  = 'count_overlap Variant 1'
-myAssert.integer.equals(message, expected, actual[1])
+# claim_list <- read_claims(payload)
+# 
+# actual <- claim_list
+# expected <- data.frame()
+# 
+#   row_frame <- c(1, 1, 3, 4, 4)
+# expected <- rbind (expected, row_frame)
+#   row_frame <- c(2, 3, 1, 4, 4)
+# expected <- rbind (expected, row_frame)
+#   row_frame <- c(3, 5, 5, 2, 2)
+# expected <- rbind (expected, row_frame)
+# 
+# names(expected)<-c("position", "left", "top", "wide", "tall")
+# 
+# message  <- 'read_claims Variant 1'
+# myAssert.data.frame.equals(message, expected, actual)
+# 
+# # count_overlap
+# int_actual <- as.integer( count_overlap(claim_list) )
+# int_expected <- as.integer (4)
+# message  <- 'count_overlap Variant 1'
+# myAssert.integer.equals(message, int_expected, int_actual)
 
 # -------- GET THE RESULT AFTER TESTING 
 
-# file <- "app//payload//Day3_Fabric_Slice_Claims.csv"
-# payload <- read.delim(file, header = TRUE, sep = "\t", quote = "\"")
-# 
-# if (is.data.frame(payload)){
-#   payload <- as.vector(t(payload))
-# }
-# 
-# result <- count_overlap(payload)
-# 
-# print("--- Result ---")
-# print(result)
+file <- "app//payload//Day3_Fabric_Slice_Claims.csv"
+payload <- read.delim(file, header = TRUE, sep = "\t", quote = "\"")
+
+claim_list <- read_claims(payload)
+result <- as.integer( count_overlap(claim_list) )
+
+print("--- Result ---")
+print(result)
+
+print("main")
+print(proc.time() - ptm)
